@@ -1238,6 +1238,11 @@ select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
 .btn-gen:disabled{background:#1e3a5f;color:#475569;cursor:not-allowed;transform:none}
 .hint{font-size:.75rem;color:#475569;margin-top:6px}
 .hint span{color:#64748b;font-weight:600}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;align-items:center}
+.quick-label{font-size:.72rem;color:#475569;margin-right:2px;white-space:nowrap}
+.quick-btn{background:rgba(30,58,95,.4);border:1px solid #1e3a5f;color:#94a3b8;
+  padding:4px 11px;border-radius:8px;font-size:.78rem;cursor:pointer;transition:all .15s;white-space:nowrap}
+.quick-btn:hover{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#93c5fd}
 .prog-wrap{height:3px;background:#1e3a5f;border-radius:2px;margin:14px 0 8px;overflow:hidden;display:none}
 .prog-bar{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa);width:0%;transition:width .5s;border-radius:2px}
 .status-txt{font-size:.8rem;color:#94a3b8;min-height:20px;margin-bottom:8px}
@@ -1316,6 +1321,14 @@ select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
       <option value="detail">詳細</option>
     </select>
     <button class="btn-gen" id="btn-gen" onclick="generate()">⚡ ブリーフィング生成</button>
+  </div>
+  <div class="quick-btns">
+    <span class="quick-label">例:</span>
+    <button class="quick-btn" onclick="quickSelect('トヨタ自動車')">🚗 トヨタ自動車</button>
+    <button class="quick-btn" onclick="quickSelect('SoftBank')">📱 SoftBank</button>
+    <button class="quick-btn" onclick="quickSelect('Salesforce')">☁️ Salesforce</button>
+    <button class="quick-btn" onclick="quickSelect('SmartHR')">👥 SmartHR</button>
+    <button class="quick-btn" onclick="quickSelect('freee')">💼 freee</button>
   </div>
   <p class="hint">※ <span>リアルタイムで検索 × Claude AI が10項目を自動生成</span>（約15〜30秒）。デモは1日5回まで。</p>
   <div class="prog-wrap" id="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
@@ -1443,6 +1456,10 @@ async function generate(){
     btn.disabled=false;
     setTimeout(()=>{progWrap.style.display='none';},1200);
   }
+}
+function quickSelect(name){
+  document.getElementById('company-input').value=name;
+  generate();
 }
 fetchQuota();
 document.getElementById('company-input').focus();
