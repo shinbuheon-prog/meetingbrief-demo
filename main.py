@@ -297,9 +297,12 @@ def call_claude(company: str, mode: str = "standard", language: str = "ja") -> d
         "4.market_infoは市場規模・成長率・トレンドを。"
         "5.competitive_positioningは競合比較・差別化ポイントを。"
         "6.recent_newsは最新ニュース・プレスリリース・重要イベントを。"
-        "7.参考情報で提供されたURLを引用した箇所に [参考: タイトル](url) 形式でインラインリンクを付記する。"
+        "7.proposal_ideasは商談に活かせる具体的な提案視点を必ず3〜5件生成すること。"
+        "各項目はidea（提案タイトル）・detail（背景と具体的アプローチ）・priority（high/medium/lowのいずれか）の3フィールドで返す。"
+        "8.icebreakersは商談冒頭で使えるアイスブレイキングネタ（最新動向・業界話題・共通トピック）を必ず3〜5件の文字列リストで返すこと。"
+        "9.参考情報で提供されたURLを引用した箇所に [参考: タイトル](url) 形式でインラインリンクを付記する。"
         "SNS公式情報がある場合は各セクションに反映する。"
-        "8.business_insightはsummary（総括文）・pain_points（主要課題リスト）・"
+        "10.business_insightはsummary（総括文）・pain_points（主要課題リスト）・"
         "tech_stack（技術スタックリスト）・opportunities（営業機会リスト）の4フィールドで返すこと。"
         "9.product_reviewsはG2/Gartner/Capterra参考情報からsummary・g2_score・gartner_score・"
         "g2_reviews・pros（強みリスト）・cons（課題リスト）・sales_tipを生成。"
@@ -1544,7 +1547,7 @@ function renderGeo(d){
     h+='<div style="margin-bottom:10px"><div style="font-size:.7rem;color:#64748b;margin-bottom:5px">AIエンジン別カバレッジ</div>';
     d.ai_engines.forEach(e=>{
       const pct=Math.min(100,parseInt(e.mention_rate)||0);
-      h+=`<div class="ai-row"><span style="font-size:.72rem;color:#94a3b8;width:64px;flex-shrink:0">${esc(e.engine||'')}</span><div style="flex:1;height:6px;background:#1e3a5f;border-radius:3px"><div style="width:${pct}%;height:100%;background:#a855f7;border-radius:3px"></div></div><span style="font-size:.7rem;color:#c084fc;width:30px;text-align:right">${pct}%</span></div>`;
+      h+=`<div class="ai-row"><span style="font-size:.72rem;color:#94a3b8;width:140px;min-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(e.engine||'')}</span><div style="flex:1;height:6px;background:#1e3a5f;border-radius:3px"><div style="width:${pct}%;height:100%;background:#a855f7;border-radius:3px"></div></div><span style="font-size:.7rem;color:#c084fc;width:32px;text-align:right;flex-shrink:0">${pct}%</span></div>`;
     });
     h+='</div>';
   }
