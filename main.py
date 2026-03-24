@@ -398,7 +398,7 @@ def call_claude(company: str, mode: str = "standard", language: str = "ja") -> d
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     response = client.messages.create(
         model=CLAUDE_MODEL,
-        max_tokens=4096,
+        max_tokens=6000,
         system=[
             {"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}
         ],
@@ -1478,13 +1478,13 @@ function renderGeo(d){
   if(Array.isArray(d.ai_engines)&&d.ai_engines.length){
     h+='<div style="margin-bottom:10px"><div style="font-size:.7rem;color:#64748b;margin-bottom:5px">AIエンジン別カバレッジ</div>';
     d.ai_engines.forEach(e=>{
-      const pct=Math.min(100,parseInt(e.coverage)||0);
-      h+=`<div class="ai-row"><span style="font-size:.72rem;color:#94a3b8;width:64px;flex-shrink:0">${esc(e.name||'')}</span><div style="flex:1;height:6px;background:#1e3a5f;border-radius:3px"><div style="width:${pct}%;height:100%;background:#a855f7;border-radius:3px"></div></div><span style="font-size:.7rem;color:#c084fc;width:30px;text-align:right">${pct}%</span></div>`;
+      const pct=Math.min(100,parseInt(e.mention_rate)||0);
+      h+=`<div class="ai-row"><span style="font-size:.72rem;color:#94a3b8;width:64px;flex-shrink:0">${esc(e.engine||'')}</span><div style="flex:1;height:6px;background:#1e3a5f;border-radius:3px"><div style="width:${pct}%;height:100%;background:#a855f7;border-radius:3px"></div></div><span style="font-size:.7rem;color:#c084fc;width:30px;text-align:right">${pct}%</span></div>`;
     });
     h+='</div>';
   }
-  if(Array.isArray(d.topics)&&d.topics.length){
-    h+='<div style="margin-bottom:8px"><div style="font-size:.7rem;color:#64748b;margin-bottom:4px">検索クエリカバー</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+d.topics.map(t=>`<span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:#c084fc;font-size:.68rem;padding:2px 8px;border-radius:999px">${esc(t)}</span>`).join('')+'</div></div>';
+  if(Array.isArray(d.top_topics)&&d.top_topics.length){
+    h+='<div style="margin-bottom:8px"><div style="font-size:.7rem;color:#64748b;margin-bottom:4px">検索クエリカバー</div><div style="display:flex;flex-wrap:wrap;gap:4px">'+d.top_topics.map(t=>`<span style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);color:#c084fc;font-size:.68rem;padding:2px 8px;border-radius:999px">${esc(t)}</span>`).join('')+'</div></div>';
   }
   if(d.sales_insight)h+=`<div style="padding:8px;background:rgba(168,85,247,.08);border:1px solid rgba(168,85,247,.2);border-radius:6px;font-size:.75rem;color:#e9d5ff">💡 ${esc(d.sales_insight)}</div>`;
   h+='</div>';
@@ -1495,9 +1495,10 @@ function renderInsight(d){
   let h='';
   if(d.summary)h+=`<p class="body-txt" style="margin-bottom:10px">${renderMd(d.summary)}</p>`;
   h+='<div class="ins-cols">';
-  if(d.pain_points)h+=`<div class="ins-col"><div style="font-size:.7rem;color:#ef4444;font-weight:700;margin-bottom:5px">⚠️ 主要課題</div><p class="body-txt">${renderMd(d.pain_points)}</p></div>`;
-  if(d.tech_stack)h+=`<div class="ins-col"><div style="font-size:.7rem;color:#60a5fa;font-weight:700;margin-bottom:5px">🔧 技術スタック</div><p class="body-txt">${renderMd(d.tech_stack)}</p></div>`;
-  if(d.opportunities)h+=`<div class="ins-col"><div style="font-size:.7rem;color:#22c55e;font-weight:700;margin-bottom:5px">🚀 営業機会</div><p class="body-txt">${renderMd(d.opportunities)}</p></div>`;
+  const fmtArr=(v)=>Array.isArray(v)?'<ul style="padding-left:14px;font-size:.75rem;color:#94a3b8;line-height:1.5">'+v.map(x=>`<li>${esc(x)}</li>`).join('')+'</ul>':`<p class="body-txt">${renderMd(String(v||''))}</p>`;
+  if(d.pain_points)h+=`<div class="ins-col"><div style="font-size:.7rem;color:#ef4444;font-weight:700;margin-bottom:5px">⚠️ 主要課題</div>${fmtArr(d.pain_points)}</div>`;
+  if(d.tech_stack)h+=`<div class="ins-col"><div style="font-size:.7rem;color:#60a5fa;font-weight:700;margin-bottom:5px">🔧 技術スタック</div>${fmtArr(d.tech_stack)}</div>`;
+  if(d.opportunities)h+=`<div class="ins-col"><div style="font-size:.7rem;color:#22c55e;font-weight:700;margin-bottom:5px">🚀 営業機会</div>${fmtArr(d.opportunities)}</div>`;
   h+='</div>';
   return h;
 }
