@@ -1278,39 +1278,63 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans
 .hero h1{font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:14px}
 .hero h1 span{color:#60a5fa}
 .hero p{font-size:.95rem;color:#94a3b8;line-height:1.7;max-width:600px;margin:0 auto 24px}
-.flow-pills{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:32px}
-.pill{padding:6px 16px;border-radius:999px;font-size:.8rem;font-weight:600}
-.pill-blue{background:rgba(37,99,235,.2);border:1px solid rgba(37,99,235,.4);color:#93c5fd}
-.pill-green{background:rgba(16,185,129,.15);border:1px solid rgba(16,185,129,.3);color:#6ee7b7}
-.arrow{color:#475569;font-size:.9rem}
-.demo-box{background:rgba(30,58,95,.2);border:1px solid #1e3a5f;border-radius:18px;
-  padding:28px 32px;max-width:760px;margin:0 auto 40px;text-align:left}
-.demo-box h2{font-size:1.05rem;font-weight:700;color:#e2e8f0;margin-bottom:20px;
-  display:flex;align-items:center;gap:10px}
-.demo-box h2 .quota-badge{margin-left:auto;font-size:.72rem;font-weight:600;
-  background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);
-  color:#6ee7b7;padding:3px 10px;border-radius:999px}
-.input-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
-.company-input{flex:1;min-width:220px;background:#0a1929;border:1px solid #1e3a5f;
-  color:#e2e8f0;padding:10px 14px;border-radius:10px;font-size:.95rem;outline:none}
+/* Stepper */
+.stepper{display:flex;align-items:flex-start;justify-content:center;gap:0;margin-bottom:32px;flex-wrap:wrap;padding:0 8px}
+.step{display:flex;flex-direction:column;align-items:center;text-align:center}
+.step-circle{width:38px;height:38px;border-radius:50%;border:2px solid #1e3a5f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;margin-bottom:5px;background:rgba(255,255,255,.03);color:#475569}
+.step-active .step-circle{background:linear-gradient(135deg,#2563eb,#3b82f6);border-color:#3b82f6;color:#fff;box-shadow:0 0 0 4px rgba(59,130,246,.18),0 4px 14px rgba(37,99,235,.4)}
+.step-label{font-size:.7rem;color:#475569;max-width:72px;line-height:1.3}
+.step-active .step-label{color:#93c5fd;font-weight:600}
+.step-tag{font-size:.6rem;background:rgba(245,158,11,.15);color:#fbbf24;border:1px solid rgba(245,158,11,.25);padding:1px 7px;border-radius:999px;margin-top:4px;white-space:nowrap}
+.step-connector{flex:1;height:2px;background:#1e3a5f;margin-top:18px;min-width:16px;max-width:44px;opacity:.5}
+.step-connector.act{background:linear-gradient(90deg,#1e3a5f,#2563eb);opacity:1}
+/* Demo box */
+.demo-box{background:rgba(8,20,44,.5);border:1px solid rgba(59,130,246,.15);border-radius:18px;
+  padding:28px 32px;max-width:760px;margin:0 auto 40px;text-align:left;
+  box-shadow:0 0 0 1px rgba(59,130,246,.07),0 8px 40px rgba(0,0,0,.5),0 0 80px rgba(37,99,235,.05)}
+.demo-box h2{font-size:1.05rem;font-weight:700;color:#e2e8f0;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.quota-row{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.quota-label{font-size:.7rem;color:#64748b}
+.quota-track{width:80px;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
+.quota-fill{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:3px;transition:width .5s}
+.quota-fill.warn{background:linear-gradient(90deg,#f97316,#ea580c)}
+.quota-fill.empty{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.quota-num{font-size:.72rem;font-weight:700;color:#6ee7b7}
+/* Input */
+.input-row{display:flex;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.company-input{flex:1;min-width:220px;background:#050c1a;border:1px solid #1e3a5f;
+  color:#e2e8f0;padding:11px 14px;border-radius:10px;font-size:.95rem;outline:none;transition:border-color .2s,box-shadow .2s}
 .company-input:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.15)}
-.company-input::placeholder{color:#475569}
-select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
-  padding:10px 12px;border-radius:10px;font-size:.85rem;outline:none}
-.btn-gen{background:#2563eb;color:#fff;border:none;padding:10px 24px;border-radius:10px;
-  font-size:.9rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s}
-.btn-gen:hover{background:#1d4ed8;transform:translateY(-1px)}
-.btn-gen:disabled{background:#1e3a5f;color:#475569;cursor:not-allowed;transform:none}
-.hint{font-size:.75rem;color:#475569;margin-top:6px}
+.company-input.err{border-color:rgba(239,68,68,.5)}
+.company-input::placeholder{color:#334155}
+select.mode-sel{background:#050c1a;border:1px solid #1e3a5f;color:#e2e8f0;
+  padding:11px 12px;border-radius:10px;font-size:.85rem;outline:none}
+.btn-gen{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;padding:11px 22px;border-radius:10px;
+  font-size:.9rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:7px}
+.btn-gen:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 18px rgba(37,99,235,.45)}
+.btn-gen:disabled{background:#1e3a5f;color:#475569;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-spin{display:none;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.btn-gen.loading .btn-spin{display:block}
+.btn-gen.loading .btn-lbl{opacity:.7}
+@keyframes spin{to{transform:rotate(360deg)}}
+.inline-error{font-size:.74rem;color:#fca5a5;margin-bottom:8px;display:none;
+  padding:7px 11px;background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.2);border-radius:8px;line-height:1.5}
+.inline-error.show{display:block}
+.hint{font-size:.75rem;color:#475569;margin-top:4px}
 .hint span{color:#64748b;font-weight:600}
-.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px;align-items:center}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 6px;align-items:center}
 .quick-label{font-size:.72rem;color:#475569;margin-right:2px;white-space:nowrap}
 .quick-btn{background:rgba(30,58,95,.4);border:1px solid #1e3a5f;color:#94a3b8;
   padding:4px 11px;border-radius:8px;font-size:.78rem;cursor:pointer;transition:all .15s;white-space:nowrap}
 .quick-btn:hover{background:rgba(59,130,246,.15);border-color:rgba(59,130,246,.4);color:#93c5fd}
-.prog-wrap{height:3px;background:#1e3a5f;border-radius:2px;margin:14px 0 8px;overflow:hidden;display:none}
-.prog-bar{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa);width:0%;transition:width .5s;border-radius:2px}
-.status-txt{font-size:.8rem;color:#94a3b8;min-height:20px;margin-bottom:8px}
+.prog-wrap{height:4px;background:#0d1f3c;border-radius:2px;margin:14px 0 6px;overflow:hidden;display:none}
+.prog-bar{height:100%;background:linear-gradient(90deg,#2563eb,#60a5fa,#818cf8);background-size:200% 100%;width:0%;transition:width .6s ease;border-radius:2px;animation:shimmer 2s linear infinite}
+@keyframes shimmer{0%{background-position:0% 0}100%{background-position:200% 0}}
+.status-wrap{display:flex;align-items:center;gap:7px;min-height:20px;margin-bottom:8px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#3b82f6;flex-shrink:0;display:none;animation:sdot 1.2s ease-in-out infinite}
+.status-dot.show{display:block}
+@keyframes sdot{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1.3)}}
+.status-txt{font-size:.78rem;color:#64748b}
 .result-area{display:none;margin-top:20px}
 .result-area.show{display:block}
 .result-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #1e3a5f}
@@ -1344,13 +1368,16 @@ select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
   background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);padding:2px 7px;border-radius:4px}
 .refs-links a:hover{background:rgba(59,130,246,.18)}
 .inline-ref{color:#3b82f6;text-decoration:none;border-bottom:1px dotted #93c5fd;font-size:.8em;vertical-align:super}
-.cta-bar{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);
-  border-radius:12px;padding:16px 20px;max-width:760px;margin:0 auto 48px;
-  display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.cta-bar p{flex:1;font-size:.82rem;color:#94a3b8;line-height:1.5}
-.error-box{background:rgba(220,38,38,.1);border:1px solid rgba(220,38,38,.3);
-  border-radius:8px;padding:10px 14px;font-size:.8rem;color:#fca5a5;margin-top:8px;display:none}
-.error-box.show{display:block}
+.cta-bar{border:1px solid rgba(59,130,246,.1);border-radius:14px;padding:20px 22px;max-width:760px;margin:0 auto 48px;background:rgba(8,15,30,.7)}
+.cta-bar-title{font-size:.7rem;color:#475569;text-align:center;margin-bottom:12px;text-transform:uppercase;letter-spacing:.08em}
+.cta-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cta-card{background:rgba(37,99,235,.05);border:1px solid rgba(59,130,246,.1);border-radius:10px;padding:12px 10px;text-align:center;transition:border-color .15s}
+.cta-card:hover{border-color:rgba(59,130,246,.25)}
+.cta-card-icon{font-size:1.25rem;margin-bottom:5px}
+.cta-card-ttl{font-size:.73rem;font-weight:700;color:#93c5fd;margin-bottom:3px}
+.cta-card-desc{font-size:.67rem;color:#475569;line-height:1.3}
+.cta-card-tag{font-size:.6rem;background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.2);padding:1px 6px;border-radius:999px;display:inline-block;margin-top:3px}
+@media(max-width:600px){.cta-cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.ins-cols{grid-template-columns:1fr}}
 @media(max-width:640px){
   .hero h1{font-size:1.5rem}
@@ -1371,33 +1398,51 @@ select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
   <h1>商談前<span>30分</span>のリサーチを<br><span>5分</span>に。AIが自動生成。</h1>
   <p>会社名を入力するだけで、企業概要・財務情報・競合分析・最新ニュース・提案視点を<br>
   10項目で即時生成。BizDev担当者が自ら設計・実装・毎日使用しているツールです。</p>
-  <div class="flow-pills">
-    <span class="pill pill-blue">📅 Google Calendar 自動連携</span>
-    <span class="arrow">→</span>
-    <span class="pill pill-blue">🔍 企業名自動検知</span>
-    <span class="arrow">→</span>
-    <span class="pill pill-green">⚡ 5分でブリーフィング生成</span>
-    <span class="arrow">→</span>
-    <span class="pill pill-green">📝 商談後 議事録自動生成</span>
+  <div class="stepper">
+    <div class="step">
+      <div class="step-circle">①</div>
+      <div class="step-label">Google Calendar<br>自動連携</div>
+    </div>
+    <div class="step-connector act"></div>
+    <div class="step">
+      <div class="step-circle">②</div>
+      <div class="step-label">企業名<br>自動検知</div>
+    </div>
+    <div class="step-connector act"></div>
+    <div class="step step-active">
+      <div class="step-circle">③</div>
+      <div class="step-label">ブリーフィング<br>自動生成</div>
+      <div class="step-tag">← 今ここ（体験可）</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step">
+      <div class="step-circle">④</div>
+      <div class="step-label">議事録<br>自動生成</div>
+    </div>
   </div>
 </div>
 
 <div class="demo-box">
-  <h2>
-    🔍 今すぐ試す — 任意の会社名を入力
-    <span class="quota-badge" id="quota-badge">残り 5 回 / 今日</span>
-  </h2>
+  <h2>🔍 今すぐ試す</h2>
+  <div class="quota-row">
+    <span class="quota-label">本日の残り回数</span>
+    <div class="quota-track"><div class="quota-fill" id="quota-fill" style="width:100%"></div></div>
+    <span class="quota-num" id="quota-num">5 / 5回</span>
+  </div>
   <div class="input-row">
     <input class="company-input" id="company-input" type="text"
-      placeholder="例: SmartHR、Salesforce、トヨタ自動車、Apple..."
+      placeholder="調べたい会社名を入力（例: トヨタ自動車、Salesforce）"
       onkeydown="if(event.key==='Enter')generate()">
     <select class="mode-sel" id="mode-sel">
       <option value="standard">標準</option>
       <option value="short">簡潔</option>
       <option value="detail">詳細</option>
     </select>
-    <button class="btn-gen" id="btn-gen" onclick="generate()">⚡ ブリーフィング生成</button>
+    <button class="btn-gen" id="btn-gen" onclick="generate()">
+      <span class="btn-spin"></span><span class="btn-lbl">⚡ ブリーフィング生成</span>
+    </button>
   </div>
+  <div class="inline-error" id="inline-error"></div>
   <div class="quick-btns">
     <span class="quick-label">例:</span>
     <button class="quick-btn" onclick="quickSelect('トヨタ自動車')">🚗 トヨタ自動車</button>
@@ -1408,8 +1453,7 @@ select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
   </div>
   <p class="hint">※ <span>リアルタイムで検索 × Claude AI が10項目を自動生成</span>（Tavily × Wikipedia × G2/Gartner、約15〜30秒）。デモは1日5回まで。</p>
   <div class="prog-wrap" id="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
-  <div class="status-txt" id="status-txt"></div>
-  <div class="error-box" id="error-box"></div>
+  <div class="status-wrap"><div class="status-dot" id="status-dot"></div><div class="status-txt" id="status-txt"></div></div>
   <div class="result-area" id="result-area">
     <div class="result-header">
       <div>
@@ -1426,10 +1470,31 @@ select.mode-sel{background:#0a1929;border:1px solid #1e3a5f;color:#e2e8f0;
 </div>
 
 <div class="cta-bar">
-  <p>
-    <strong>フル機能版</strong>ではGoogle Calendarと連携し、当日の商談を自動検知。
-    議事録自動生成・RelationshipScore・HubSpot同期（Phase 2）・GEO分析も搭載。
-  </p>
+  <div class="cta-bar-title">フル機能版でさらに</div>
+  <div class="cta-cards">
+    <div class="cta-card">
+      <div class="cta-card-icon">📅</div>
+      <div class="cta-card-ttl">Calendar連携</div>
+      <div class="cta-card-desc">当日の商談を自動検知・ブリーフィング配信</div>
+    </div>
+    <div class="cta-card">
+      <div class="cta-card-icon">📝</div>
+      <div class="cta-card-ttl">議事録自動生成</div>
+      <div class="cta-card-desc">書き起こし → 構造化議事録に即時変換</div>
+    </div>
+    <div class="cta-card">
+      <div class="cta-card-icon">🔗</div>
+      <div class="cta-card-ttl">HubSpot同期</div>
+      <div class="cta-card-desc">商談メモをCRMへ自動転記</div>
+      <div class="cta-card-tag">Phase 2</div>
+    </div>
+    <div class="cta-card">
+      <div class="cta-card-icon">📊</div>
+      <div class="cta-card-ttl">Relationship Score</div>
+      <div class="cta-card-desc">顧客関係深度の定量化</div>
+      <div class="cta-card-tag">Phase 2</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -1520,14 +1585,12 @@ async function fetchQuota(){
   try{
     const r=await fetch('/api/demo-quota');
     const d=await r.json();
-    const badge=document.getElementById('quota-badge');
-    badge.textContent=`残り ${d.remaining} 回 / 今日`;
-    if(d.remaining<=0){
-      document.getElementById('btn-gen').disabled=true;
-      badge.style.background='rgba(220,38,38,.1)';
-      badge.style.color='#fca5a5';
-      badge.style.borderColor='rgba(220,38,38,.3)';
-    }
+    const rem=d.remaining,lim=d.limit||5;
+    const fill=document.getElementById('quota-fill');
+    const num=document.getElementById('quota-num');
+    if(fill){fill.style.width=(rem/lim*100)+'%';fill.className='quota-fill'+(rem<=1?' empty':rem<=2?' warn':'');}
+    if(num){num.textContent=`${rem} / ${lim}回`;num.style.color=rem<=1?'#fca5a5':rem<=2?'#fbbf24':'#6ee7b7';}
+    if(rem<=0)document.getElementById('btn-gen').disabled=true;
   }catch(e){}
 }
 async function generate(){
@@ -1538,18 +1601,31 @@ async function generate(){
   const progWrap=document.getElementById('prog-wrap');
   const progBar=document.getElementById('prog-bar');
   const statusTxt=document.getElementById('status-txt');
-  const errorBox=document.getElementById('error-box');
+  const statusDot=document.getElementById('status-dot');
+  const inlineErr=document.getElementById('inline-error');
+  const compInput=document.getElementById('company-input');
   const resultArea=document.getElementById('result-area');
+  const MSGS=[
+    `${company} の基本情報・Wikipedia を検索中...`,
+    `${company} のニュース・財務情報を収集中...`,
+    `製品レビュー・競合情報を分析中...`,
+    `Claude AI がブリーフィングを生成中...`
+  ];
   btn.disabled=true;
-  errorBox.classList.remove('show');
+  btn.classList.add('loading');
+  inlineErr.classList.remove('show');
+  compInput.classList.remove('err');
   resultArea.classList.remove('show');
   progWrap.style.display='block';
-  progBar.style.width='15%';
-  statusTxt.textContent=`${company} の情報を収集中... (Tavily × Wikipedia × G2/Gartner)`;
+  progBar.style.width='12%';
+  statusDot.classList.add('show');
+  statusTxt.textContent=MSGS[0];
+  let msgIdx=0;
   const ticker=setInterval(()=>{
-    const cur=parseFloat(progBar.style.width)||15;
-    if(cur<72)progBar.style.width=(cur+2.5)+'%';
-  },700);
+    const cur=parseFloat(progBar.style.width)||12;
+    if(cur<74)progBar.style.width=(cur+1.8)+'%';
+    if(msgIdx<MSGS.length-1){msgIdx++;statusTxt.textContent=MSGS[msgIdx];}
+  },4500);
   try{
     const resp=await fetch('/api/demo-briefing',{
       method:'POST',
@@ -1558,10 +1634,15 @@ async function generate(){
     });
     clearInterval(ticker);
     progBar.style.width='92%';
+    statusDot.classList.remove('show');
     if(!resp.ok){
-      const err=await resp.json();
-      errorBox.textContent=resp.status===429?'デモ利用上限（1日5回）に達しました。明日またお試しください。':'エラー: '+(err.detail||'不明なエラー');
-      errorBox.classList.add('show');
+      const err=await resp.json().catch(()=>({}));
+      const msg=resp.status===429?'デモ利用上限（1日5回）に達しました。明日またお試しください。'
+        :resp.status>=500?'サーバーエラーが発生しました。しばらく後でお試しください。（'+( err.detail||'unknown')+'）'
+        :(err.detail||'エラーが発生しました。会社名を確認して再試行してください。');
+      inlineErr.textContent=msg;
+      inlineErr.classList.add('show');
+      compInput.classList.add('err');
       progBar.style.width='0%';
       statusTxt.textContent='';
       return;
@@ -1588,12 +1669,15 @@ async function generate(){
     fetchQuota();
   }catch(e){
     clearInterval(ticker);
-    errorBox.textContent='ネットワークエラー: '+e.message;
-    errorBox.classList.add('show');
+    statusDot.classList.remove('show');
+    inlineErr.textContent='接続エラー: ネットワーク環境をご確認ください。';
+    inlineErr.classList.add('show');
+    compInput.classList.add('err');
     progBar.style.width='0%';
     statusTxt.textContent='';
   }finally{
     btn.disabled=false;
+    btn.classList.remove('loading');
     setTimeout(()=>{progWrap.style.display='none';},1200);
   }
 }
