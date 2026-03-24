@@ -1311,7 +1311,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans
 .company-input.err{border-color:rgba(239,68,68,.5)}
 .company-input::placeholder{color:#334155}
 select.mode-sel{background:#050c1a;border:1px solid #1e3a5f;color:#e2e8f0;
-  padding:11px 12px;border-radius:10px;font-size:.85rem;outline:none}
+  padding:11px 12px;border-radius:10px;font-size:.85rem;outline:none;transition:border-color .2s,box-shadow .2s}
+@keyframes hint-glow{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0);border-color:#1e3a5f}
+  50%{box-shadow:0 0 0 5px rgba(59,130,246,.35);border-color:#3b82f6}}
+@keyframes hint-btn-glow{0%,100%{box-shadow:0 4px 18px rgba(37,99,235,.3)}
+  50%{box-shadow:0 4px 24px rgba(59,130,246,.75),0 0 0 6px rgba(59,130,246,.2)}}
+select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-color:#3b82f6}
+.btn-gen.hint-next-btn{animation:hint-btn-glow 1.1s ease-in-out infinite}
 .btn-gen{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;border:none;padding:11px 22px;border-radius:10px;
   font-size:.9rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .2s;display:flex;align-items:center;gap:7px}
 .btn-gen:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 18px rgba(37,99,235,.45)}
@@ -1596,7 +1602,14 @@ async function fetchQuota(){
     if(rem<=0)document.getElementById('btn-gen').disabled=true;
   }catch(e){}
 }
+document.getElementById('mode-sel').addEventListener('change',function(){
+  if(this.classList.contains('hint-next')){
+    this.classList.remove('hint-next');
+    document.getElementById('btn-gen').classList.add('hint-next-btn');
+  }
+});
 async function generate(){
+  clearHints();
   const company=document.getElementById('company-input').value.trim();
   if(!company){document.getElementById('company-input').focus();return;}
   const mode=document.getElementById('mode-sel').value;
@@ -1630,11 +1643,15 @@ async function generate(){
     if(msgIdx<MSGS.length-1){msgIdx++;statusTxt.textContent=MSGS[msgIdx];}
   },4500);
   try{
+    const ctrl=new AbortController();
+    const timer=setTimeout(()=>ctrl.abort(),60000);
     const resp=await fetch('/api/demo-briefing',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({company,mode,language:'ja'})
+      body:JSON.stringify({company,mode,language:'ja'}),
+      signal:ctrl.signal
     });
+    clearTimeout(timer);
     clearInterval(ticker);
     progBar.style.width='92%';
     statusDot.classList.remove('show');
@@ -1673,7 +1690,12 @@ async function generate(){
   }catch(e){
     clearInterval(ticker);
     statusDot.classList.remove('show');
-    inlineErr.textContent='接続エラー: ネットワーク環境をご確認ください。';
+    const isTimeout=e.name==='AbortError';
+    const msg=isTimeout
+      ?'タイムアウト: サーバーの応答が遅れています。再試行してください。'
+      :(e.message&&e.message.length<120)?e.message
+      :'接続エラー: サーバーに接続できません。しばらく後でお試しください。';
+    inlineErr.textContent=msg;
     inlineErr.classList.add('show');
     compInput.classList.add('err');
     progBar.style.width='0%';
@@ -1686,7 +1708,19 @@ async function generate(){
 }
 function quickSelect(name){
   document.getElementById('company-input').value=name;
-  generate();
+  document.getElementById('company-input').focus();
+  const modeSel=document.getElementById('mode-sel');
+  const btnGen=document.getElementById('btn-gen');
+  modeSel.classList.add('hint-next');
+  btnGen.classList.remove('hint-next-btn');
+  setTimeout(()=>{
+    modeSel.classList.remove('hint-next');
+    btnGen.classList.add('hint-next-btn');
+  },2200);
+}
+function clearHints(){
+  document.getElementById('mode-sel').classList.remove('hint-next');
+  document.getElementById('btn-gen').classList.remove('hint-next-btn');
 }
 fetchQuota();
 document.getElementById('company-input').focus();
