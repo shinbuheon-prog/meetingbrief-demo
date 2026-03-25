@@ -1460,7 +1460,7 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
     <button class="quick-btn" onclick="quickSelect('SmartHR')">👥 SmartHR</button>
     <button class="quick-btn" onclick="quickSelect('freee')">💼 freee</button>
   </div>
-  <p class="hint">※ <span>リアルタイムで検索 × Claude AI が10項目を自動生成</span>（Tavily × Wikipedia × G2/Gartner、約15〜30秒）。デモは1日5回まで。</p>
+  <p class="hint">※ <span>リアルタイムで検索 × Claude AI が10項目を自動生成</span>（Tavily × Wikipedia × G2/Gartner、約15〜30秒）。</p>
   <div class="prog-wrap" id="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
   <div class="status-wrap"><div class="status-dot" id="status-dot"></div><div class="status-txt" id="status-txt"></div></div>
   <div class="result-area" id="result-area">
@@ -1657,7 +1657,7 @@ async function generate(){
     statusDot.classList.remove('show');
     if(!resp.ok){
       const err=await resp.json().catch(()=>({}));
-      const msg=resp.status===429?'デモ利用上限（1日5回）に達しました。明日またお試しください。'
+      const msg=resp.status===429?'デモの利用上限に達しました。明日またお試しください。'
         :resp.status>=500?'サーバーエラーが発生しました。しばらく後でお試しください。（'+( err.detail||'unknown')+'）'
         :(err.detail||'エラーが発生しました。会社名を確認して再試行してください。');
       inlineErr.textContent=msg;
