@@ -1296,13 +1296,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans
   padding:28px 32px;max-width:760px;margin:0 auto 40px;text-align:left;
   box-shadow:0 0 0 1px rgba(59,130,246,.07),0 8px 40px rgba(0,0,0,.5),0 0 80px rgba(37,99,235,.05)}
 .demo-box h2{font-size:1.05rem;font-weight:700;color:#e2e8f0;margin-bottom:6px;display:flex;align-items:center;gap:10px}
-.quota-row{display:flex;align-items:center;gap:8px;margin-bottom:18px}
-.quota-label{font-size:.7rem;color:#7a8fa8}
-.quota-track{width:80px;height:5px;background:rgba(255,255,255,.05);border-radius:3px;overflow:hidden}
-.quota-fill{height:100%;background:linear-gradient(90deg,#22c55e,#16a34a);border-radius:3px;transition:width .5s}
-.quota-fill.warn{background:linear-gradient(90deg,#f97316,#ea580c)}
-.quota-fill.empty{background:linear-gradient(90deg,#ef4444,#dc2626)}
-.quota-num{font-size:.72rem;font-weight:700;color:#6ee7b7}
 /* Input */
 .input-row{display:flex;gap:10px;margin-bottom:6px;flex-wrap:wrap}
 .company-input{flex:1;min-width:220px;background:#050c1a;border:1px solid #1e3a5f;
@@ -1433,11 +1426,6 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
 
 <div class="demo-box">
   <h2>🔍 今すぐ試す</h2>
-  <div class="quota-row">
-    <span class="quota-label">本日の残り回数</span>
-    <div class="quota-track"><div class="quota-fill" id="quota-fill" style="width:100%"></div></div>
-    <span class="quota-num" id="quota-num">5 / 5回</span>
-  </div>
   <div class="input-row">
     <input class="company-input" id="company-input" type="text"
       placeholder="調べたい会社名を入力（例: トヨタ自動車、Salesforce）"
@@ -1594,12 +1582,7 @@ async function fetchQuota(){
   try{
     const r=await fetch('/api/demo-quota');
     const d=await r.json();
-    const rem=d.remaining,lim=d.limit||5;
-    const fill=document.getElementById('quota-fill');
-    const num=document.getElementById('quota-num');
-    if(fill){fill.style.width=(rem/lim*100)+'%';fill.className='quota-fill'+(rem<=1?' empty':rem<=2?' warn':'');}
-    if(num){num.textContent=`${rem} / ${lim}回`;num.style.color=rem<=1?'#fca5a5':rem<=2?'#fbbf24':'#6ee7b7';}
-    if(rem<=0)document.getElementById('btn-gen').disabled=true;
+    if(d.remaining<=0)document.getElementById('btn-gen').disabled=true;
   }catch(e){}
 }
 document.getElementById('mode-sel').addEventListener('change',function(){
@@ -1742,7 +1725,7 @@ async def api_demo_briefing(request: Request):
     ip = request.client.host
     if not _demo_consume(ip):
         return JSONResponse(
-            {"detail": f"デモ制限: 1日{DEMO_LIMIT_PER_DAY}回まで利用可能です"},
+            {"detail": "本日のデモ利用上限に達しました。明日またお試しください。"},
             status_code=429
         )
     body = await request.json()
