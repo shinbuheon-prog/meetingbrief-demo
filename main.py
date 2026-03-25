@@ -214,9 +214,9 @@ def fetch_all_sources(company: str) -> dict:
                 else:
                     bundle[section].append(item)
 
-            # Call 4: 製品評判 G2/Gartner/Capterra (basic, 6件)
+            # Call 4: 製品評判 G2/Gartner/Capterra/ITreview (basic, 6件)
             resp4 = tc.search(
-                query=f"{company} G2 Gartner Capterra review rating score pros cons evaluation",
+                query=f"{company} G2 Gartner Capterra ITreview 評判 review rating score pros cons evaluation",
                 search_depth="basic",
                 max_results=6,
             )
@@ -269,7 +269,7 @@ def call_claude(company: str, mode: str = "standard", language: str = "ja") -> d
     if sources["business_insight"]:
         context_block += f"[ビジネスインサイト・採用・ブログ参考]\n{_fmt_refs(sources['business_insight'], 4)}\n\n"
     if sources["product_reviews"]:
-        context_block += f"[製品評判・G2/Gartner参考]\n{_fmt_refs(sources['product_reviews'], 5)}\n\n"
+        context_block += f"[製品評判・G2/Gartner/ITreview参考]\n{_fmt_refs(sources['product_reviews'], 5)}\n\n"
 
     all_refs = {
         "company_overview":        sources["company_overview"],
@@ -304,7 +304,7 @@ def call_claude(company: str, mode: str = "standard", language: str = "ja") -> d
         "SNS公式情報がある場合は各セクションに反映する。"
         "10.business_insightはsummary（総括文）・pain_points（主要課題リスト）・"
         "tech_stack（技術スタックリスト）・opportunities（営業機会リスト）の4フィールドで返すこと。"
-        "9.product_reviewsはG2/Gartner/Capterra参考情報からsummary・g2_score・gartner_score・"
+        "9.product_reviewsはG2/Gartner/Capterra/ITreview参考情報からsummary・g2_score・gartner_score・"
         "g2_reviews・pros（強みリスト）・cons（課題リスト）・sales_tipを生成。"
         "スコア不明の場合は空文字。prosは3〜5件、consは2〜4件。"
         "10.geo_analysisはAI検索エンジン（Claude/ChatGPT/Gemini/Perplexity）での"
@@ -425,13 +425,15 @@ def call_claude_minutes(company: str, transcript: str) -> str:
     system_text = (
         "あなたは商談議事録を作成する専門AIです。"
         "提供された書き起こしから構造化された議事録を日本語で作成してください。"
-        "フォーマット: 1.参加者, 2.議題, 3.主要な議論, 4.決定事項, 5.次のアクション"
+        "フォーマット: 1.参加者, 2.議題, 3.主要な議論, 4.決定事項, 5.アクションアイテム（担当・期限を含む）, 6.次回アジェンダ（候補）"
     )
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     response = client.messages.create(
         model=CLAUDE_MODEL,
         max_tokens=2048,
-        system=system_text,
+        system=[
+            {"type": "text", "text": system_text, "cache_control": {"type": "ephemeral"}}
+        ],
         messages=[{
             "role": "user",
             "content": f"企業: {company}\n\n書き起こし:\n{transcript}\n\n議事録を作成してください。"
@@ -1393,7 +1395,7 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
 <div class="header">
   <div class="logo">⚡ MeetingBrief AI</div>
   <span class="demo-badge">🎯 Demo Mode</span>
-  <div class="header-right">Powered by Claude (Anthropic) × Tavily × G2/Gartner</div>
+  <div class="header-right">Powered by Claude (Anthropic) × Tavily × G2/Gartner/ITreview</div>
 </div>
 
 <div class="hero">
@@ -1448,7 +1450,7 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
     <button class="quick-btn" onclick="quickSelect('SmartHR')">👥 SmartHR</button>
     <button class="quick-btn" onclick="quickSelect('freee')">💼 freee</button>
   </div>
-  <p class="hint">※ <span>リアルタイムで検索 × Claude AI が10項目を自動生成</span>（Tavily × Wikipedia × G2/Gartner、約15〜30秒）。</p>
+  <p class="hint">※ <span>リアルタイムで検索 × Claude AI が10項目を自動生成</span>（Tavily × Wikipedia × G2/Gartner/ITreview、約15〜30秒）。</p>
   <div class="prog-wrap" id="prog-wrap"><div class="prog-bar" id="prog-bar"></div></div>
   <div class="status-wrap"><div class="status-dot" id="status-dot"></div><div class="status-txt" id="status-txt"></div></div>
   <div class="result-area" id="result-area">
@@ -1654,7 +1656,7 @@ async function generate(){
     progBar.style.width='100%';
     statusTxt.textContent=`✅ ブリーフィング完了: ${company}`;
     document.getElementById('result-company').textContent=company+' ブリーフィング';
-    document.getElementById('result-meta').textContent=new Date().toLocaleString('ja-JP')+' · モード: '+mode+' · claude-haiku-4-5 + Tavily × G2/Gartner';
+    document.getElementById('result-meta').textContent=new Date().toLocaleString('ja-JP')+' · モード: '+mode+' · claude-haiku-4-5 + Tavily × G2/Gartner/ITreview';
     document.getElementById('sections-grid').innerHTML=SECTIONS.map(([n,ic,lb,k,col])=>{
       const fw=FULL.includes(k)?'grid-column:1/-1;':'';
       return `<div class="sec-card" style="border-left-color:${col};${fw}"><div class="sec-hd"><span class="sec-n">${n}</span><span class="sec-lb">${ic} ${lb}</span></div>${renderSec(k,data[k])}</div>`;
