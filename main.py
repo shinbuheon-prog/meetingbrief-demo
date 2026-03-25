@@ -1280,7 +1280,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans JP',sans
 .hero{padding:48px 24px 32px;max-width:760px;margin:0 auto;text-align:center}
 .hero h1{font-size:2rem;font-weight:800;line-height:1.2;margin-bottom:14px}
 .hero h1 span{color:#60a5fa}
-.hero p{font-size:.95rem;color:#a8b8cc;line-height:1.7;max-width:600px;margin:0 auto 24px}
+.hero p{font-size:.95rem;color:#a8b8cc;line-height:1.7;max-width:720px;margin:0 auto 24px}
 /* Stepper */
 .stepper{display:flex;align-items:flex-start;justify-content:center;gap:0;margin-bottom:32px;flex-wrap:wrap;padding:0 8px}
 .step{display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -1406,7 +1406,7 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
 <div class="hero">
   <h1>商談前<span>30分</span>のリサーチを<br><span>5分</span>に。AIが自動生成。</h1>
   <p>会社名を入力するだけで、企業概要・財務情報・競合分析・最新ニュース・提案視点を<br>
-  10項目で即時生成。BizDev担当者が自ら設計・実装・毎日使用しているツールです。</p>
+  10項目で即時生成。営業担当者が自ら設計・実装した本番稼働可能なツールです。</p>
   <div class="stepper">
     <div class="step">
       <div class="step-circle">①</div>
