@@ -91,6 +91,7 @@ def _dedup(items: list) -> list:
 def fetch_all_sources(company: str) -> dict:
     import xml.etree.ElementTree as ET
     from urllib.parse import quote
+    from concurrent.futures import ThreadPoolExecutor
 
     bundle: dict = {
         "company_overview": [], "financial_info": [], "market_info": [],
@@ -98,136 +99,170 @@ def fetch_all_sources(company: str) -> dict:
         "business_insight": [], "product_reviews": [], "wiki_text": "", "wiki_url": "",
     }
 
-    # ── 1. Wikipedia ──────────────────────────────────────────────────────────
-    for lang in ("ja", "en"):
+    def _fetch_wikipedia():
+        res = {"wiki_text": "", "wiki_url": "", "company_overview": []}
+        for lang in ("ja", "en"):
+            try:
+                api_url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{quote(company)}"
+                r = requests.get(api_url, timeout=5, headers={"User-Agent": "MeetingBriefAI/1.0"})
+                if r.status_code == 200:
+                    data = r.json()
+                    extract = data.get("extract", "")
+                    if len(extract) > 80:
+                        res["wiki_text"] = f"[Wikipedia/{lang}] {extract[:800]}"
+                        res["wiki_url"]  = data.get("content_urls", {}).get("desktop", {}).get("page", "")
+                        res["company_overview"].append({
+                            "title": data.get("title", company) + " - Wikipedia",
+                            "url": res["wiki_url"], "content": extract[:300],
+                        })
+                        break
+            except Exception:
+                pass
+        return res
+
+    def _fetch_google_news():
+        items = []
         try:
-            api_url = f"https://{lang}.wikipedia.org/api/rest_v1/page/summary/{quote(company)}"
-            r = requests.get(api_url, timeout=6, headers={"User-Agent": "MeetingBriefAI/1.0"})
+            rss_url = f"https://news.google.com/rss/search?q={quote(company)}&hl=ja&gl=JP&ceid=JP:ja"
+            r = requests.get(rss_url, timeout=6, headers={"User-Agent": "MeetingBriefAI/1.0"})
             if r.status_code == 200:
-                data = r.json()
-                extract = data.get("extract", "")
-                if len(extract) > 80:
-                    bundle["wiki_text"] = f"[Wikipedia/{lang}] {extract[:800]}"
-                    bundle["wiki_url"]  = data.get("content_urls", {}).get("desktop", {}).get("page", "")
-                    bundle["company_overview"].append({
-                        "title": data.get("title", company) + " - Wikipedia",
-                        "url": bundle["wiki_url"], "content": extract[:300],
-                    })
-                    break
+                root = ET.fromstring(r.content)
+                for item in root.findall(".//item")[:6]:
+                    title = item.findtext("title", "").split(" - ")[0].strip()
+                    link  = item.findtext("link", "")
+                    if title and link:
+                        items.append({"title": title, "url": link, "content": ""})
         except Exception:
             pass
+        return items
 
-    # ── 2. Google News RSS ────────────────────────────────────────────────────
-    try:
-        q = quote(company)
-        rss_url = f"https://news.google.com/rss/search?q={q}&hl=ja&gl=JP&ceid=JP:ja"
-        r = requests.get(rss_url, timeout=8, headers={"User-Agent": "MeetingBriefAI/1.0"})
-        if r.status_code == 200:
-            root = ET.fromstring(r.content)
-            for item in root.findall(".//item")[:6]:
-                title = item.findtext("title", "").split(" - ")[0].strip()
-                link  = item.findtext("link", "")
-                if title and link:
-                    bundle["recent_news"].append({"title": title, "url": link, "content": ""})
-    except Exception:
-        pass
+    def _fetch_prtimes():
+        items = []
+        try:
+            pr_url = f"https://prtimes.jp/rss/company_name/search/?name={quote(company)}"
+            r = requests.get(pr_url, timeout=5, headers={"User-Agent": "MeetingBriefAI/1.0"})
+            if r.status_code == 200:
+                root = ET.fromstring(r.content)
+                for item in root.findall(".//item")[:3]:
+                    title = item.findtext("title", "").strip()
+                    link  = item.findtext("link", "")
+                    desc  = item.findtext("description", "")[:150]
+                    if title and link:
+                        items.append({"title": f"[PR] {title}", "url": link, "content": desc})
+        except Exception:
+            pass
+        return items
 
-    # ── 3. PR Times RSS ───────────────────────────────────────────────────────
-    try:
-        q = quote(company)
-        pr_url = f"https://prtimes.jp/rss/company_name/search/?name={q}"
-        r = requests.get(pr_url, timeout=6, headers={"User-Agent": "MeetingBriefAI/1.0"})
-        if r.status_code == 200:
-            root = ET.fromstring(r.content)
-            for item in root.findall(".//item")[:3]:
-                title = item.findtext("title", "").strip()
-                link  = item.findtext("link", "")
-                desc  = item.findtext("description", "")[:150]
-                if title and link:
-                    bundle["recent_news"].append({"title": f"[PR] {title}", "url": link, "content": desc})
-    except Exception:
-        pass
+    def _fetch_qiita():
+        items = []
+        try:
+            from urllib.parse import quote as _q
+            r = requests.get(f"https://qiita.com/api/v2/items?query={_q(company)}&per_page=5",
+                             timeout=5, headers={"User-Agent": "MeetingBriefAI/1.0"})
+            if r.status_code == 200:
+                for item in r.json()[:5]:
+                    title = item.get("title", "")
+                    url_q = item.get("url", "")
+                    tags  = ", ".join(t.get("name", "") for t in item.get("tags", [])[:4])
+                    if title and url_q:
+                        items.append({
+                            "title": f"[Qiita] {title}", "url": url_q,
+                            "content": f"Tags: {tags}. {item.get('body','')[:150]}",
+                        })
+        except Exception:
+            pass
+        return items
 
-    # ── 3b. Qiita API ─────────────────────────────────────────────────────────
-    try:
-        from urllib.parse import quote as _q
-        qiita_url = f"https://qiita.com/api/v2/items?query={_q(company)}&per_page=5"
-        r = requests.get(qiita_url, timeout=6, headers={"User-Agent": "MeetingBriefAI/1.0"})
-        if r.status_code == 200:
-            for item in r.json()[:5]:
-                title  = item.get("title", "")
-                url_q  = item.get("url", "")
-                body   = item.get("body", "")[:200]
-                tags   = ", ".join(t.get("name", "") for t in item.get("tags", [])[:4])
-                if title and url_q:
-                    bundle["business_insight"].append({
-                        "title": f"[Qiita] {title}",
-                        "url": url_q,
-                        "content": f"Tags: {tags}. {body[:150]}",
-                    })
-    except Exception:
-        pass
-
-    # ── 4. Tavily (3 calls) ───────────────────────────────────────────────────
-    tavily_key = os.environ.get("TAVILY_API_KEY", "")
-    if tavily_key:
+    def _fetch_tavily():
+        res: dict = {k: [] for k in ["company_overview", "financial_info", "market_info",
+                                      "competitive_positioning", "recent_news", "sns_official",
+                                      "business_insight", "product_reviews"]}
+        tavily_key = os.environ.get("TAVILY_API_KEY", "")
+        if not tavily_key:
+            return res
         try:
             from tavily import TavilyClient
             tc = TavilyClient(api_key=tavily_key)
 
-            # Call 1: 企業概要・財務・競合・市場 (advanced, 10件)
-            resp1 = tc.search(
-                query=f"{company} 企業情報 IR 決算 業績 アナリスト評価 競合 市場シェア",
-                search_depth="advanced",
-                max_results=10,
-            )
-            for r in resp1.get("results", []):
-                section = _classify_url(r.get("url", ""))
-                item = {"title": r.get("title", ""), "url": r.get("url", ""), "content": r.get("content", "")[:250]}
-                bundle[section].append(item)
-                if section == "financial_info":
-                    bundle["competitive_positioning"].append(item)
+            def _t1():
+                resp = tc.search(query=f"{company} 企業情報 IR 決算 業績 アナリスト評価 競合 市場シェア",
+                                 search_depth="advanced", max_results=10)
+                out: dict = {}
+                for r in resp.get("results", []):
+                    sec  = _classify_url(r.get("url", ""))
+                    item = {"title": r.get("title",""), "url": r.get("url",""), "content": r.get("content","")[:250]}
+                    out.setdefault(sec, []).append(item)
+                    if sec == "financial_info":
+                        out.setdefault("competitive_positioning", []).append(item)
+                return out
 
-            # Call 2: ニュース・SNS (advanced, 8件)
-            resp2 = tc.search(
-                query=f"{company} 最新ニュース プレスリリース 公式SNS 投資家 スタートアップ 資金調達",
-                search_depth="advanced",
-                max_results=8,
-            )
-            for r in resp2.get("results", []):
-                section = _classify_url(r.get("url", ""))
-                item = {"title": r.get("title", ""), "url": r.get("url", ""), "content": r.get("content", "")[:200]}
-                bundle[section].append(item)
+            def _t2():
+                resp = tc.search(query=f"{company} 最新ニュース プレスリリース 公式SNS 投資家 スタートアップ 資金調達",
+                                 search_depth="advanced", max_results=8)
+                out: dict = {}
+                for r in resp.get("results", []):
+                    sec  = _classify_url(r.get("url", ""))
+                    item = {"title": r.get("title",""), "url": r.get("url",""), "content": r.get("content","")[:200]}
+                    out.setdefault(sec, []).append(item)
+                return out
 
-            # Call 3: ビジネスインサイト (basic, 8件)
-            resp3 = tc.search(
-                query=f"{company} 採用課題 ペインポイント 技術ブログ 事業戦略 カンファレンス",
-                search_depth="basic",
-                max_results=8,
-            )
-            for r in resp3.get("results", []):
-                section = _classify_url(r.get("url", ""))
-                item = {"title": r.get("title", ""), "url": r.get("url", ""), "content": r.get("content", "")[:250]}
-                url_r = r.get("url", "").lower()
-                if section == "business_insight" or any(kw in url_r for kw in ["blog", "tech", "career", "recruit", "event", "jobs"]):
-                    bundle["business_insight"].append(item)
-                else:
-                    bundle[section].append(item)
+            def _t3():
+                resp = tc.search(query=f"{company} 採用課題 ペインポイント 技術ブログ 事業戦略 カンファレンス",
+                                 search_depth="basic", max_results=8)
+                bi, other = [], {}
+                for r in resp.get("results", []):
+                    sec  = _classify_url(r.get("url", ""))
+                    item = {"title": r.get("title",""), "url": r.get("url",""), "content": r.get("content","")[:250]}
+                    url_r = r.get("url","").lower()
+                    if sec == "business_insight" or any(kw in url_r for kw in ["blog","tech","career","recruit","event","jobs"]):
+                        bi.append(item)
+                    else:
+                        other.setdefault(sec, []).append(item)
+                return {"business_insight": bi, "other": other}
 
-            # Call 4: 製品評判 G2/Gartner/Capterra/ITreview (basic, 6件)
-            resp4 = tc.search(
-                query=f"{company} G2 Gartner Capterra ITreview 評判 review rating score pros cons evaluation",
-                search_depth="basic",
-                max_results=6,
-            )
-            for r in resp4.get("results", []):
-                item = {"title": r.get("title", ""), "url": r.get("url", ""), "content": r.get("content", "")[:300]}
-                bundle["product_reviews"].append(item)
+            def _t4():
+                resp = tc.search(query=f"{company} G2 Gartner Capterra ITreview 評判 review rating score pros cons evaluation",
+                                 search_depth="basic", max_results=6)
+                return [{"title": r.get("title",""), "url": r.get("url",""), "content": r.get("content","")[:300]}
+                        for r in resp.get("results", [])]
+
+            # Tavily 4 calls in parallel
+            with ThreadPoolExecutor(max_workers=4) as tp:
+                f1, f2, f3, f4 = tp.submit(_t1), tp.submit(_t2), tp.submit(_t3), tp.submit(_t4)
+                r1, r2, r3, r4 = f1.result(), f2.result(), f3.result(), f4.result()
+
+            for k, v in r1.items():
+                res.setdefault(k, []).extend(v)
+            for k, v in r2.items():
+                res.setdefault(k, []).extend(v)
+            res["business_insight"].extend(r3["business_insight"])
+            for k, v in r3["other"].items():
+                res.setdefault(k, []).extend(v)
+            res["product_reviews"].extend(r4)
 
         except Exception as e:
             print(f"[Tavily error] {e}")
+        return res
 
-    # ── 5. 重複排除・上限設定 ─────────────────────────────────────────────────
+    # ── すべてのソースを並列取得 ───────────────────────────────────────────────
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        fw = pool.submit(_fetch_wikipedia)
+        fg = pool.submit(_fetch_google_news)
+        fp = pool.submit(_fetch_prtimes)
+        fq = pool.submit(_fetch_qiita)
+        ft = pool.submit(_fetch_tavily)
+
+        wiki = fw.result()
+        bundle["wiki_text"] = wiki["wiki_text"]
+        bundle["wiki_url"]  = wiki["wiki_url"]
+        bundle["company_overview"].extend(wiki["company_overview"])
+        bundle["recent_news"].extend(fg.result())
+        bundle["recent_news"].extend(fp.result())
+        bundle["business_insight"].extend(fq.result())
+        for k, v in ft.result().items():
+            bundle.setdefault(k, []).extend(v)
+
+    # ── 重複排除・上限設定 ────────────────────────────────────────────────────
     limits = {
         "company_overview": 3, "financial_info": 4, "market_info": 3,
         "competitive_positioning": 3, "recent_news": 5, "sns_official": 2,
@@ -1076,7 +1111,8 @@ async def api_briefing(request: Request):
     mid      = body.get("mid", "unknown")
 
     try:
-        result = call_claude(company, mode, language)
+        import asyncio
+        result = await asyncio.to_thread(call_claude, company, mode, language)
     except Exception as e:
         return JSONResponse({"detail": str(e)}, status_code=500)
 
@@ -1629,7 +1665,7 @@ async function generate(){
   },4500);
   try{
     const ctrl=new AbortController();
-    const timer=setTimeout(()=>ctrl.abort(),60000);
+    const timer=setTimeout(()=>ctrl.abort(),90000);
     const resp=await fetch('/api/demo-briefing',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -1737,7 +1773,8 @@ async def api_demo_briefing(request: Request):
     if not company:
         return JSONResponse({"detail": "会社名を入力してください"}, status_code=400)
     try:
-        result = call_claude(company, mode, language)
+        import asyncio
+        result = await asyncio.to_thread(call_claude, company, mode, language)
     except Exception as e:
         return JSONResponse({"detail": str(e)}, status_code=500)
     return JSONResponse(result)
