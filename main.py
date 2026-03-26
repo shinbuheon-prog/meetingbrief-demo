@@ -1511,23 +1511,25 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
       <div class="cta-card-icon">📅</div>
       <div class="cta-card-ttl">Calendar連携</div>
       <div class="cta-card-desc">当日の商談を自動検知・ブリーフィング配信</div>
+      <div class="cta-card-tag done">✅ 実装済み</div>
     </div>
     <div class="cta-card">
       <div class="cta-card-icon">📝</div>
       <div class="cta-card-ttl">議事録自動生成</div>
       <div class="cta-card-desc">書き起こし → 構造化議事録に即時変換</div>
-    </div>
-    <div class="cta-card">
-      <div class="cta-card-icon">🔗</div>
-      <div class="cta-card-ttl">HubSpot同期</div>
-      <div class="cta-card-desc">商談メモをCRMへ自動転記</div>
-      <div class="cta-card-tag">Phase 2</div>
+      <div class="cta-card-tag done">✅ 実装済み</div>
     </div>
     <div class="cta-card">
       <div class="cta-card-icon">📊</div>
       <div class="cta-card-ttl">Relationship Score</div>
       <div class="cta-card-desc">顧客関係深度の定量化</div>
       <div class="cta-card-tag done">✅ 実装済み</div>
+    </div>
+    <div class="cta-card">
+      <div class="cta-card-icon">🔗</div>
+      <div class="cta-card-ttl">HubSpot同期</div>
+      <div class="cta-card-desc">商談メモをCRMへ自動転記</div>
+      <div class="cta-card-tag">Phase 2</div>
     </div>
   </div>
 </div>
