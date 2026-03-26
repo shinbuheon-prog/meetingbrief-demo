@@ -1416,7 +1416,7 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
 .cta-card-icon{font-size:1.25rem;margin-bottom:5px}
 .cta-card-ttl{font-size:.73rem;font-weight:700;color:#93c5fd;margin-bottom:3px}
 .cta-card-desc{font-size:.67rem;color:#7a8fa8;line-height:1.3}
-.cta-card-tag{font-size:.6rem;background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.2);padding:1px 6px;border-radius:999px;display:inline-block;margin-top:3px}
+.cta-card-tag{font-size:.6rem;background:rgba(168,85,247,.1);color:#c084fc;border:1px solid rgba(168,85,247,.2);padding:1px 6px;border-radius:999px;display:inline-block;margin-top:3px}.cta-card-tag.done{background:rgba(34,197,94,.12);color:#4ade80;border-color:rgba(34,197,94,.25)}
 @media(max-width:600px){.cta-cards{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.ins-cols{grid-template-columns:1fr}}
 @media(max-width:640px){
@@ -1527,7 +1527,7 @@ select.mode-sel.hint-next{animation:hint-glow 1.1s ease-in-out infinite;border-c
       <div class="cta-card-icon">📊</div>
       <div class="cta-card-ttl">Relationship Score</div>
       <div class="cta-card-desc">顧客関係深度の定量化</div>
-      <div class="cta-card-tag">Phase 2</div>
+      <div class="cta-card-tag done">✅ 実装済み</div>
     </div>
   </div>
 </div>
